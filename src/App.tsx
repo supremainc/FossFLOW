@@ -6,12 +6,14 @@ import awsIsopack from '@isoflow/isopacks/dist/aws';
 import gcpIsopack from '@isoflow/isopacks/dist/gcp';
 import azureIsopack from '@isoflow/isopacks/dist/azure';
 import kubernetesIsopack from '@isoflow/isopacks/dist/kubernetes';
+import biostar from './biostar';
 import { DiagramData, mergeDiagramData, extractSavableData } from './diagramUtils';
 import { StorageManager } from './StorageManager';
 import './App.css';
 
 const icons = flattenCollections([
   isoflowIsopack,
+  biostar,
   awsIsopack,
   azureIsopack,
   gcpIsopack,
