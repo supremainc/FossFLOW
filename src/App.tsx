@@ -44,6 +44,7 @@ function App() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [lastAutoSave, setLastAutoSave] = useState<Date | null>(null);
   const [showStorageManager, setShowStorageManager] = useState(false);
+  const [showImageExportDialog, setShowImageExportDialog] = useState(false);
   
   // Initialize with empty diagram data
   // Create default colors for connectors
@@ -266,9 +267,11 @@ function App() {
       return merged;
     });
   };
+  
 
   const exportDiagram = () => {
     // For export, DO include icons so the file is self-contained
+    console.log('11111');
     const exportData = {
       title: diagramName || currentModel?.title || diagramData.title || 'Exported Diagram',
       icons: icons, // Include ALL icons for portability
@@ -291,6 +294,36 @@ function App() {
     
     setShowExportDialog(false);
     setHasUnsavedChanges(false); // Mark as saved after export
+  };
+
+  const exportAsImage = async () => {
+    try {
+      const { exportAsImage: exportImageUtil, downloadFile, generateGenericFilename, base64ToBlob } = await import('./utils/exportOptions');
+      
+      // Find the FossFLOW container - try multiple selectors
+      const fossflowContainer = document.querySelector('.fossflow-container > .MuiBox-root > .MuiBox-root:first-of-type');
+      
+      if (!fossflowContainer) {
+        alert('Could not find diagram to export');
+        return;
+      }
+      
+      try {
+        const imageData = await exportImageUtil(fossflowContainer as HTMLDivElement);
+        const data = base64ToBlob(
+          imageData.replace('data:image/png;base64,', ''),
+          'image/png;charset=utf-8'
+        );
+        downloadFile(data, generateGenericFilename('png'));
+        setShowImageExportDialog(false);
+      } catch (exportError) {
+        console.error('Export error:', exportError);
+        alert('Failed to export image. Please try again.');
+      }
+    } catch (error) {
+      console.error('Import error:', error);
+      alert('Failed to load export utilities. Please try again.');
+    }
   };
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -419,6 +452,12 @@ function App() {
           💾 Export File
         </button>
         <button 
+          onClick={() => setShowImageExportDialog(true)}
+          style={{ backgroundColor: '#17a2b8' }}
+        >
+          🖼️ Export Image
+        </button>
+        <button 
           onClick={() => {
             if (currentDiagram && hasUnsavedChanges) {
               saveDiagram();
@@ -448,7 +487,7 @@ function App() {
           key={fossflowKey}
           initialData={diagramData}
           onModelUpdated={handleModelUpdated}
-          editorMode="EDITABLE"
+          editorMode={showImageExportDialog ? "NON_INTERACTIVE" : "EDITABLE"}
         />
       </div>
 
@@ -594,6 +633,36 @@ function App() {
             <div className="dialog-buttons">
               <button onClick={exportDiagram}>Download JSON</button>
               <button onClick={() => setShowExportDialog(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Export Dialog */}
+      {showImageExportDialog && (
+        <div className="dialog-overlay">
+          <div className="dialog">
+            <h2>Export as Image</h2>
+            <div style={{
+              backgroundColor: '#d1ecf1',
+              border: '1px solid #bee5eb',
+              padding: '15px',
+              borderRadius: '8px',
+              marginBottom: '20px'
+            }}>
+              <p style={{ margin: '0 0 10px 0' }}>
+                <strong>🖼️ Image Export:</strong> Export your diagram as a PNG image.
+              </p>
+              <p style={{ margin: 0, fontSize: '14px', color: '#0c5460' }}>
+                The image will be generated from the current diagram view.
+              </p>
+            </div>
+            <div className="dialog-buttons">
+              <button onClick={exportAsImage}>Download PNG</button>
+              <button onClick={() => {
+                setShowImageExportDialog(false);
+                setDiagramData(prevData => ({ ...prevData, editorMode: "EDITABLE" }));
+              }}>Cancel</button>
             </div>
           </div>
         </div>
