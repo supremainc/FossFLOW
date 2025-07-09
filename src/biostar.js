@@ -1,22 +1,22 @@
 (() => {
   "use strict";
-  var M = {
+  var K = {
       d: (L, j) => {
         for (var w in j)
-          M.o(j, w) &&
-            !M.o(L, w) &&
+          K.o(j, w) &&
+            !K.o(L, w) &&
             Object.defineProperty(L, w, { enumerable: !0, get: j[w] });
       },
-      o: (M, L) => Object.prototype.hasOwnProperty.call(M, L),
-      r: (M) => {
+      o: (K, L) => Object.prototype.hasOwnProperty.call(K, L),
+      r: (K) => {
         "undefined" != typeof Symbol &&
           Symbol.toStringTag &&
-          Object.defineProperty(M, Symbol.toStringTag, { value: "Module" }),
-          Object.defineProperty(M, "__esModule", { value: !0 });
+          Object.defineProperty(K, Symbol.toStringTag, { value: "Module" }),
+          Object.defineProperty(K, "__esModule", { value: !0 });
       },
     },
     L = {};
-  M.r(L), M.d(L, { default: () => j });
+  K.r(L), K.d(L, { default: () => j });
   const j = {
     id: "biostar",
     name: "BioStar",
