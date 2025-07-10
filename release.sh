@@ -1,1 +1,1 @@
-gh workflow run pages.yml --ref main
+gh workflow run pages.yml --ref master
