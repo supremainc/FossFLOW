@@ -169,3 +169,7 @@
 .diagram-actions button:last-child:hover {
   background-color: #c82333;
 }
+
+p[class*='MuiTypography'] {
+  font-size: 1.15em;
+}
