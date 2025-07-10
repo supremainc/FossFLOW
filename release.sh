@@ -1,0 +1,1 @@
+gh workflow run pages.yml --ref main
